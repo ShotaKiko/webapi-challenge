@@ -1,12 +1,17 @@
 const express = require('express')
 const server = express()
+const logger = require('morgan');
 
 const db = require('./data/helpers/projectModel.js')
 const { get } = db
+const { insert } = db
+const { remove } = db
 
 //Middleware
 server.use(express.json())
+server.use(logger('dev'))
 
+//Routing paths
 server.get('/', (req, res) => {
     res.send(`
       <h2>WEB API Sprint Challenge</h2>
@@ -21,6 +26,42 @@ server.get('/projects', async (req, res) =>{
     } catch (error) {
         res.status(500).json({
             message: "The project list could not be retrieved."
+        })
+    }
+})
+//??needed~~~~~~~~~~~~~~~~~~~
+server.get('/projects/:id', async (req, res) =>{
+    try{
+        const { id } = req.params
+        const projectListItem = await get(id);
+        res.status(200).json(projectListItem)
+    } catch (error) {
+        res.status(500).json({
+            message: "The project list could not be retrieved."
+        })
+    }
+})
+//~~~~~~~~~~~~~~~~
+server.post('/projects', async (req, res) => {
+    try{
+        const newProject = req.body
+        const addedPost = await insert(newProject);
+        res.status(201).json(addedPost)
+    } catch (error) {
+        res.status(500).json({
+            message: "There was an error while saving the post to the database."
+        })
+    }
+})
+
+server.delete('/projects/:id', async (req, res) => {
+    try{
+        const { id } =req.params
+        await remove(id)
+        res.status(202)
+    } catch (error) {
+        res.status(404).json({
+            message:"The post with the specified id does not exist"
         })
     }
 })
