@@ -3,11 +3,12 @@ const server = express()
 const logger = require('morgan');
 
 const db = require('./data/helpers/projectModel.js')
-const { get } = db
-const { insert } = db
-const { remove } = db
-const { update } = db
-const { getProjectActions } = db
+// const { get } = db
+// const { insert } = db
+// const { remove } = db
+// const { update } = db
+// const { getProjectActions } = db
+//ask why destructuring doesnt work with status code??
 
 //Middleware
 server.use(express.json())
@@ -23,7 +24,7 @@ server.get('/', (req, res) => {
 
 server.get('/api/projects', async (req, res) =>{
     try{
-        const projectList = await get();
+        const projectList = await db.get();
         res.status(200).json(projectList)
     } catch (error) {
         res.status(500).json({
@@ -35,7 +36,7 @@ server.get('/api/projects', async (req, res) =>{
 server.get('/api/projects/:id', async (req, res) =>{
     try{
         const id = req.params.id
-        const projectListItem = await get(id);
+        const projectListItem = await db.get(id);
         res.status(200).json(projectListItem)
     } catch (error) {
         res.status(500).json({
@@ -47,7 +48,7 @@ server.get('/api/projects/:id', async (req, res) =>{
 server.post('/api/projects', async (req, res) => {
     try{
         const newProject = req.body
-        const addedPost = await insert(newProject);
+        const addedPost = await db.insert(newProject);
         res.status(201).json(addedPost)
     } catch (error) {
         res.status(500).json({
@@ -58,8 +59,8 @@ server.post('/api/projects', async (req, res) => {
 
 server.delete('/api/projects/:id', async (req, res) => {
     try{
-        const { id } =req.params
-        await remove(id)
+        const id =req.params.id
+        await db.remove(id)
         res.status(202)
     } catch (error) {
         res.status(404).json({
@@ -70,7 +71,7 @@ server.delete('/api/projects/:id', async (req, res) => {
 
 server.put('/api/projects/:id', async (req, res) => {
     try{
-        const updatedProject = await update(req.params.id, req.body)
+        const updatedProject = await db.update(req.params.id, req.body)
         if(updatedProject){
         res.status(200).json(updatedProject) 
     } else {
@@ -87,7 +88,7 @@ server.put('/api/projects/:id', async (req, res) => {
 
 server.get('/api/projects/:id/actions', async (req, res) =>{
     try{
-        const projectActions = await getProjectActions(req.params.id);
+        const projectActions = await db.getProjectActions(req.params.id);
         res.status(200).json(projectActions)
     } catch (error) {
         res.status(500).json({
