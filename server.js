@@ -61,12 +61,19 @@ server.post('/api/projects', async (req, res) => {
 
 server.delete('/api/projects/:id', async (req, res) => {
     try{
-        const id =req.params.id
-        await db.remove(id)
-        res.status(202)
-    } catch (error) {
+        const deletedItem = await db.remove(req.params.id)
+        if(deletedItem > 0){
+        res.status(202).json({
+            message:"Target destroyed"
+        })
+    } else {
         res.status(404).json({
             message:"The post with the specified id does not exist"
+        })
+    }
+    } catch (error) {
+        res.status(500).json({
+            message:"Unable to delete"
         })
     }
 })
@@ -111,11 +118,18 @@ server.post('/api/projects/:id/actions', async (req, res) =>{
     }
 })
 
-server.delete('/api/projects/:project_id/actions/:id', async (req, res) =>{
-    // const newAction = { ...req.body, project_id: req.params.id}
+server.delete('/api/projects/:project_id/actions/:id', async (req, res) => {
     try{
-        await dbAction.remove(req.params.id);
-        res.status(202)
+        const deletedAction = await dbAction.remove(req.params.id);
+        if(deletedAction > 0){
+        res.status(202).json({
+            message:"Action deleted"
+        })
+    }else {
+        res.status(404).json({
+            message:"no action with this id found"
+        })
+    }
     } catch (error) {
         res.status(500).json({
             message: "The action could not be deleted."
@@ -123,8 +137,7 @@ server.delete('/api/projects/:project_id/actions/:id', async (req, res) =>{
     }
 })
 
-server.put('/api/projects/:project_id/actions/:id', async (req, res) =>{
-    // const updatedAction = { ...req.body, project_id: req.params.id}
+server.put('/api/projects/:project_id/actions/:id', async (req, res) => {
     try{
         const updatedAction = await dbAction.update(req.params.id, req.body);
         res.status(200).json(updatedAction)
