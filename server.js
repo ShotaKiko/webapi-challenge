@@ -23,6 +23,7 @@ server.get('/', (req, res) => {
       `);
   });
 
+//~~~~~~~~~~~~~~~~~Project Endpoints~~~~~~~~~~~~~~~~~~~~~~~~
 server.get('/api/projects', async (req, res) =>{
     try{
         const projectList = await db.get();
@@ -33,7 +34,7 @@ server.get('/api/projects', async (req, res) =>{
         })
     }
 })
-//??needed~~~~~~~~~~~~~~~~~~~
+
 server.get('/api/projects/:id', async (req, res) =>{
     try{
         const id = req.params.id
@@ -45,7 +46,7 @@ server.get('/api/projects/:id', async (req, res) =>{
         })
     }
 })
-//~~~~~~~~~~~~~~~~
+
 server.post('/api/projects', async (req, res) => {
     try{
         const newProject = req.body
@@ -86,7 +87,7 @@ server.put('/api/projects/:id', async (req, res) => {
         })
     }
 })
-
+//~~~~~~~~~~~Action Endpoints~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 server.get('/api/projects/:id/actions', async (req, res) =>{
     try{
         const projectActions = await db.getProjectActions(req.params.id);
@@ -98,7 +99,7 @@ server.get('/api/projects/:id/actions', async (req, res) =>{
     }
 })
 
-server.post('/api/projects/:id/actions', async (req, res) =>{
+server.post('/api/projects/:project_id/actions', async (req, res) =>{
     const newAction = { ...req.body, project_id: req.params.id}
     try{
         const addedAction = await dbAction.insert(newAction);
@@ -109,6 +110,20 @@ server.post('/api/projects/:id/actions', async (req, res) =>{
         })
     }
 })
+
+server.delete('/api/projects/:project_id/actions/:id', async (req, res) =>{
+    // const newAction = { ...req.body, project_id: req.params.id}
+    try{
+        await dbAction.remove(req.params.id);
+        res.status(202)
+    } catch (error) {
+        res.status(500).json({
+            message: "The action could not be deleted."
+        })
+    }
+})
+
+
 
 
 
