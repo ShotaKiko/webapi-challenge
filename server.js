@@ -99,7 +99,7 @@ server.get('/api/projects/:id/actions', async (req, res) =>{
     }
 })
 
-server.post('/api/projects/:project_id/actions', async (req, res) =>{
+server.post('/api/projects/:id/actions', async (req, res) =>{
     const newAction = { ...req.body, project_id: req.params.id}
     try{
         const addedAction = await dbAction.insert(newAction);
@@ -119,6 +119,18 @@ server.delete('/api/projects/:project_id/actions/:id', async (req, res) =>{
     } catch (error) {
         res.status(500).json({
             message: "The action could not be deleted."
+        })
+    }
+})
+
+server.put('/api/projects/:project_id/actions/:id', async (req, res) =>{
+    // const updatedAction = { ...req.body, project_id: req.params.id}
+    try{
+        const updatedAction = await dbAction.update(req.params.id, req.body);
+        res.status(200).json(updatedAction)
+    } catch (error) {
+        res.status(500).json({
+            message: "The action could not be updated."
         })
     }
 })
