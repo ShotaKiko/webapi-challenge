@@ -3,6 +3,7 @@ const server = express()
 const logger = require('morgan');
 
 const db = require('./data/helpers/projectModel.js')
+const dbAction = require('./data/helpers/actionModel.js')
 // const { get } = db
 // const { insert } = db
 // const { remove } = db
@@ -97,6 +98,17 @@ server.get('/api/projects/:id/actions', async (req, res) =>{
     }
 })
 
+server.post('/api/projects/:id/actions', async (req, res) =>{
+    const newAction = { ...req.body, project_id: req.params.id}
+    try{
+        const addedAction = await dbAction.insert(newAction);
+        res.status(201).json(addedAction)
+    } catch (error) {
+        res.status(500).json({
+            message: "The action could not be added."
+        })
+    }
+})
 
 
 
