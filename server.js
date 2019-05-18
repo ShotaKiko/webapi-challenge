@@ -6,6 +6,8 @@ const db = require('./data/helpers/projectModel.js')
 const { get } = db
 const { insert } = db
 const { remove } = db
+const { update } = db
+const { getProjectActions } = db
 
 //Middleware
 server.use(express.json())
@@ -19,7 +21,7 @@ server.get('/', (req, res) => {
       `);
   });
 
-server.get('/projects', async (req, res) =>{
+server.get('/api/projects', async (req, res) =>{
     try{
         const projectList = await get();
         res.status(200).json(projectList)
@@ -30,9 +32,9 @@ server.get('/projects', async (req, res) =>{
     }
 })
 //??needed~~~~~~~~~~~~~~~~~~~
-server.get('/projects/:id', async (req, res) =>{
+server.get('/api/projects/:id', async (req, res) =>{
     try{
-        const { id } = req.params
+        const id = req.params.id
         const projectListItem = await get(id);
         res.status(200).json(projectListItem)
     } catch (error) {
@@ -42,7 +44,7 @@ server.get('/projects/:id', async (req, res) =>{
     }
 })
 //~~~~~~~~~~~~~~~~
-server.post('/projects', async (req, res) => {
+server.post('/api/projects', async (req, res) => {
     try{
         const newProject = req.body
         const addedPost = await insert(newProject);
@@ -54,7 +56,7 @@ server.post('/projects', async (req, res) => {
     }
 })
 
-server.delete('/projects/:id', async (req, res) => {
+server.delete('/api/projects/:id', async (req, res) => {
     try{
         const { id } =req.params
         await remove(id)
@@ -62,6 +64,23 @@ server.delete('/projects/:id', async (req, res) => {
     } catch (error) {
         res.status(404).json({
             message:"The post with the specified id does not exist"
+        })
+    }
+})
+
+server.put('/api/projects/:id', async (req, res) => {
+    try{
+        const updatedProject = await update(req.params.id, req.body)
+        if(updatedProject){
+        res.status(200).json(updatedProject) 
+    } else {
+        res.status(404).json({
+            message:"id not found"
+        })
+    }
+    } catch (error) {
+        res.status(500).json({
+            message: "error updating"
         })
     }
 })
